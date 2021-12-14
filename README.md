@@ -30,3 +30,19 @@ The proposal for data driven approach: configuration (saved in configuration fil
     # win statement
     # lose statement
     # AI parameters
+    
+To run project need to set up python virtual environment:
+	Run virtual environment by: pipenv shell
+	Then install pygame by: pip install pygame
+	
+How to run project:
+	python tetris.py
+	
+Control:
+	Press Left_Key to move figure left
+	Press Right_Key to move figure right
+	Press Down_key to move figure down faster
+	Press Up_Key to rotate figure
+	Press Escape to start new game
+
+Version: 1.0
