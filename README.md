@@ -33,16 +33,16 @@ The proposal for data driven approach: configuration (saved in configuration fil
     
 To run project need to set up python virtual environment:
 	Run virtual environment by: pipenv shell
-	Then install pygame by: pip install pygame
 	
 How to run project:
-	python tetris.py
+	python tetris_game.py
 	
 Control:
 	Press Left_Key to move figure left
 	Press Right_Key to move figure right
 	Press Down_key to move figure down faster
+	Press Space to instantly move figure down
 	Press Up_Key to rotate figure
 	Press Escape to start new game
 
-Version: 1.0
+__Release version:__ ![version](https://img.shields.io/badge/version-1.0-blue) 
