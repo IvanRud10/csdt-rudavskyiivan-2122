@@ -39,6 +39,9 @@ _Run project_:
 _Run tests_:
 	`python -m unittest tetris_test`
 
+_Config_:
+    Change config file to choose whether AI will play the game or change the user_name
+
 _Control_:
 	Press Left_Key to move figure left
 	Press Right_Key to move figure right
@@ -48,4 +51,4 @@ _Control_:
 	Press Escape to start new game
     Press CTRL + S to save a game
 
-__Release version:__ ![version](https://img.shields.io/badge/version-2.0-blue)
+__Release version:__ ![version](https://img.shields.io/badge/version-2.1-blue)
