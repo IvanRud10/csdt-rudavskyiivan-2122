@@ -46,7 +46,7 @@ LedControl lc = LedControl(DATA_PIN, CLK_PIN, CS_PIN, DISPLAYS);
 void LEDRefresh();
 void block_predictor(int next);
 
-short readBut()        
+short readBut()
 {
   readdata = "";
   while (BT.available())
@@ -1515,4 +1515,3 @@ void loop()
     }
   }
 }
-
