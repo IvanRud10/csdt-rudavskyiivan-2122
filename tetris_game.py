@@ -12,6 +12,8 @@ from PyQt5.QtGui import QPainter, QColor
 
 from tetris_model import BOARD_DATA, Shape
 
+name_of_user = "Ivan"
+
 
 class Tetris(QMainWindow):
     def __init__(self):
@@ -126,6 +128,13 @@ class Tetris(QMainWindow):
             return
 
         if self.isPaused:
+            if key == Qt.Key_S:
+                with open("results.bin", "ab") as file:
+                    score_str = str(self.tboard.score)
+                    score_bytes = str.encode(
+                        name_of_user + "'s" + " Result:" + score_str + "\n"
+                    )
+                    file.write(score_bytes)
             return
         elif key == Qt.Key_Left:
             BOARD_DATA.moveLeft()
