@@ -46,6 +46,6 @@ _Control_:
 	Press Space to instantly move figure down
 	Press Up_Key to rotate figure
 	Press Escape to start new game
-    Press CTRL + C to save a game
+    Press CTRL + S to save a game
 
 __Release version:__ ![version](https://img.shields.io/badge/version-2.0-blue)
