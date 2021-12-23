@@ -1,3 +1,6 @@
+
+
+
 #include "LedControl.h"
 #include "SPI.h"
 #include "MaxMatrix.h"
@@ -995,6 +998,521 @@ void ppr(int n = 0)
     display_on_pause2(2, high_score);
 
     // 1 - Displaying Current Score
-...
+    //display_on_pause2(1, score);
 
-This file has been truncated, please download it to see its full contents.
+    //0 - Scrolling Text
+    //5 = Play button
+    //6 = Pause button
+    //7 = Reset Button
+    display_play_symbol(0);
+    while (true)
+    {
+      int x = readBut();
+      display_design_on_pause();
+      delay(20);
+      if (x == 5)
+      {
+        //Play
+        play = 0;
+        lc.clearDisplay(0);
+        lc.clearDisplay(1);
+        lc.clearDisplay(2);
+        lc.clearDisplay(3);
+        block_predictor(next);
+        return;
+      }
+      else if (x == 2)
+      {
+        //set intensity
+        screen_intensity--;
+        screen_intensity = max(screen_intensity, 1);
+        lc.setIntensity(0, screen_intensity);
+        lc.setIntensity(1, screen_intensity);
+        lc.setIntensity(2, screen_intensity);
+        lc.setIntensity(3, screen_intensity);
+      }
+      else if (x == 3)
+      {
+        //set intensity
+        screen_intensity++;
+        screen_intensity = min(screen_intensity, 15);
+        lc.setIntensity(0, screen_intensity);
+        lc.setIntensity(1, screen_intensity);
+        lc.setIntensity(2, screen_intensity);
+        lc.setIntensity(3, screen_intensity);
+      }
+
+      //      delay(100);
+      //      m.shiftLeft(false, true);
+      //      printStringWithShift(string, 100);
+    }
+  }
+  else
+  {
+    Serial.println(F("PAUSE MODE"));
+    char string[] = "~Tetris~ <press start to continue and reset to play again>";
+    lc.clearDisplay(0);
+    lc.clearDisplay(1);
+    lc.clearDisplay(2);
+    lc.clearDisplay(3);
+
+    // 0 - Displaying Tetris and press start to play
+    // 1 - Blank
+    // 2 - High Score
+    // 3 - A tetris Block
+
+    //3 - Displaying a block
+    display_design_on_pause();
+
+    //2 - Displaying High Score
+    display_on_pause2(2, high_score);
+
+    // 1 - Displaying Current Score
+    display_on_pause2(1, score);
+
+
+
+    //0 - Scrolling Text
+
+    //0 - Scrolling Text
+    //5 = Play button
+    //6 = Pause button
+    //7 = Reset Button
+    bool finish_game = is_the_game_over();
+    if (finish_game == 1)
+    {
+      display_reset_symbol(0);
+    }
+    else
+    {
+      display_pause_symbol(0);
+    }
+    while (true)
+    {
+      int button = readBut();
+      display_design_on_pause();
+      if (finish_game == 1 && (button == 5 || button == 6 || button == 7))
+      {
+        //Reset
+        set_arrays_zero(arranged_blocks, 16, 8);
+        set_arrays_zero(coming_block, 16, 8);
+        play = 0;
+        pause = 0;
+        return;
+      }
+      if (finish_game == 0 && button == 5)
+      {
+        //Play
+
+        play = 0;
+        lc.clearDisplay(0);
+        lc.clearDisplay(1);
+        lc.clearDisplay(2);
+        lc.clearDisplay(3);
+        block_predictor(next);
+        return;
+      }
+      if (finish_game == 0 && button == 7)
+      {
+        //Reset
+        play = 1;
+        pause = 0;
+        lc.clearDisplay(0);
+        lc.clearDisplay(1);
+        lc.clearDisplay(2);
+        lc.clearDisplay(3);
+        block_predictor(next);
+        return;
+      }
+      else if (button == 2)
+      {
+        //set intensity
+        screen_intensity--;
+        screen_intensity = max(screen_intensity, 1);
+        lc.setIntensity(0, screen_intensity);
+        lc.setIntensity(1, screen_intensity);
+        lc.setIntensity(2, screen_intensity);
+        lc.setIntensity(3, screen_intensity);
+      }
+      else if (button == 3)
+      {
+        //set intensity
+        screen_intensity++;
+        screen_intensity = min(screen_intensity, 15);
+        lc.setIntensity(0, screen_intensity);
+        lc.setIntensity(1, screen_intensity);
+        lc.setIntensity(2, screen_intensity);
+        lc.setIntensity(3, screen_intensity);
+      }
+
+      //      delay(100);
+      //      m.shiftLeft(false, true);
+      //      printStringWithShift(string, 100);
+    }
+
+  }
+}
+
+
+void game()
+{
+  Serial.println(F("In game function"));
+  timePassed = millis();
+  while (true)
+  {
+    if (play == 1)
+    {
+      break;
+    }
+    //sw = analogRead(A0);
+    delay(30);
+    //Serial.println(sw);
+    if (millis() - timePassed > delay_)
+    {
+      buzzer();
+      Serial.println(F("Translating down"));
+      translate_down();
+      timePassed = millis();
+    }
+
+    //buttun actions
+    int button = readBut();
+
+    if (button == 1) //up=rotate
+    {
+      Serial.println(F("-Rotate function is called"));
+      rotate();
+    }
+    if (button == 2)//right=moveright
+    {
+      Serial.println(F("> Translate right function is called"));
+      translate_right();
+    }
+
+    if (button == 3) //left=moveleft
+    {
+      Serial.println(F("< translate left function is called"));
+      translate_left();
+    }
+
+    if (button == 4) //down=movedown
+    {
+      Serial.println(F("| translate down function is called"));
+      translate_down();
+    }
+
+    if (button == 6)
+    {
+      Serial.println(F("Pause was pressed"));
+      play = 1;
+      pause = 1;
+      return;
+    }
+    if (button == 7)
+    {
+      Serial.println(F("Reset was pressed"));
+      play = 1;
+      pause = 0;
+      return;
+    }
+  }
+}
+
+
+
+
+void LEDRefresh()
+{
+
+  lc.clearDisplay(0);
+  lc.clearDisplay(1);
+  Serial.println(F("LedRefresh"));
+  //setLed(Addr of display, row, column, true/false)
+  for (int i = 0 ; i < 8; i++)
+  {
+    for (int j = 0 ; j < 8; j++)
+    {
+      int k = 7 - i + 8 * j;
+      int x = k / 8;
+      int y = k % 8;
+      if (coming_block[i][j] != 0 ||  arranged_blocks[i][j] != 0)
+      {
+        lc.setLed(1, x, 7 - y, true);
+      }
+    }
+  }
+
+  for (int i = 8; i < 16; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      int k = 7 - (i - 8) + 8 * j;
+      int x = k / 8;
+      int y = k % 8;
+      if (coming_block[i][j] != 0  ||  arranged_blocks[i][j] != 0)
+      {
+
+        lc.setLed(0, x, 7 - y, true);
+      }
+    }
+  }
+}
+
+void block_predictor(int next)
+{
+  lc.clearDisplay(3);
+  for (int i = 0; i < 5; i++)
+  {
+    for (int j = 0; j < 5; j++)
+    {
+      int k = 7 - i + 8 * j;
+      int x = k / 8;
+      int y = k % 8;
+      if (block_blueprint[next][i][j] != 0)
+      {
+        lc.setLed(3, x, 7 - y, true);
+      }
+    }
+  }
+}
+
+
+
+
+
+//Time elapsed section.
+unsigned long startTime;
+unsigned long elapsedTime;
+
+//After_basic_complete_start
+
+
+
+
+////After_basic_complete_end
+int melody[] =
+{
+  262, 193, 193, 220, 196, 0, 247, 264
+};
+int noteDurations[] =
+{
+  4, 8, 8, 4, 4, 4, 4, 4
+};
+/*
+  ISR(TIMER1_COMPA_vect)
+  {
+  //change the 0 to 1 for timer1 and 2 for timer2
+  buzzer();
+  }
+*/
+void buzzer()
+{
+  for (int thisNote = 2; thisNote < 5; thisNote++)
+  {
+
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 200 / noteDurations[thisNote];
+    tone(12, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(8);
+  }
+}
+
+void buzzer1()
+{
+  for (int thisNote = 0; thisNote < 8; thisNote++)
+  {
+
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 100 / noteDurations[thisNote];
+    tone(12, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(8);
+  }
+}
+
+void setup() {
+
+  pinMode(buttonRotate, INPUT);
+  pinMode(buttonLeft, INPUT);
+  pinMode(buttonRight, INPUT);
+  pinMode(buttonDown, INPUT);
+  pinMode(buttonPlay, INPUT);
+  pinMode(buttonPause, INPUT);
+  pinMode(buttonReset, INPUT);
+
+  Serial.begin(9600);
+  Serial.println(F("TEAM : TETROMINOES (HERE GOES OUR FUNCTIONING)"));
+
+  int seed =
+    (analogRead(0) + 1) *
+    (analogRead(1) + 1) *
+    (analogRead(2) + 1) *
+    (analogRead(3) + 1);
+  randomSeed(seed);
+  random(10, 9610806);
+  seed = seed * random(3336, 15679912) + analogRead(random(4)) ;
+  randomSeed(seed);
+  random(10, 98046);
+
+  //block_blueprint 0
+  //..2..
+  //..2..
+  //..3..
+  //..2..
+  //.....
+  block_blueprint[0][0][2] = 2;
+  block_blueprint[0][1][2] = 2;
+  block_blueprint[0][2][2] = 3;
+  block_blueprint[0][3][2] = 2;
+
+  //block_blueprint 1
+  //.....
+  //..2..
+  //..32.
+  //..2..
+  //.....
+  block_blueprint[1][1][2] = 2;
+  block_blueprint[1][2][2] = 3;
+  block_blueprint[1][2][3] = 2;
+  block_blueprint[1][3][2] = 2;
+
+  //block 2
+  //.....
+  //.2...
+  //.23..
+  //..2..
+  //.....
+  block_blueprint[2][1][1] = 2;
+  block_blueprint[2][2][1] = 2;
+  block_blueprint[2][2][2] = 3;
+  block_blueprint[2][3][2] = 2;
+
+  //block_blueprint 3
+  //.....
+  //.22..
+  //.23..
+  //.....
+  //.....
+  block_blueprint[3][1][1] = 2;
+  block_blueprint[3][1][2] = 2;
+  block_blueprint[3][2][1] = 2;
+  block_blueprint[3][2][2] = 3;
+
+  //block_blueprint 4
+  //.....
+  //..2..
+  //.23..
+  //.2...
+  //.....
+  block_blueprint[4][1][2] = 2;
+  block_blueprint[4][2][1] = 2;
+  block_blueprint[4][2][2] = 3;
+  block_blueprint[4][3][1] = 2;
+
+  //block_blueprint 5
+  //.....
+  //.22..
+  //..3..
+  //..2..
+  //.....
+  block_blueprint[5][1][1] = 2;
+  block_blueprint[5][1][2] = 2;
+  block_blueprint[5][2][2] = 3;
+  block_blueprint[5][3][2] = 2;
+
+  //block_blueprint 6
+  //.....
+  //..22.
+  //..3..
+  //..2..
+  //.....
+  block_blueprint[6][1][2] = 2;
+  block_blueprint[6][1][3] = 2;
+  block_blueprint[6][2][2] = 3;
+  block_blueprint[6][3][2] = 2;
+
+
+  //Assigning INPUT_PULLUP to all the pins, they will help us to determine whether a particular switch is pressed or not.(https://www.arduino.cc/en/Tutorial/InputPullupSerial)
+  //pinMode(buttonRotate, INPUT_PULLUP); // Rotate
+  //pinMode(buttonRight, INPUT_PULLUP);  // Right
+  //pinMode(buttonLeft, INPUT_PULLUP);   // Left
+  //pinMode(buttonDown, INPUT_PULLUP);   // Down
+  //pinMode(play_switch, INPUT_PULLUP); // Play
+  //pinMode(pause_switch, INPUT_PULLUP); //Pause
+  //pinMode(reset_switch, INPUT_PULLUP); //Reset
+  //pinMode(sw, INPUT_PULLUP);
+  lc.shutdown(0, false);
+  lc.shutdown(1, false);
+  lc.shutdown(2, false);
+  lc.shutdown(3, false);
+  lc.setIntensity(0, screen_intensity);
+  lc.setIntensity(1, screen_intensity);
+  lc.setIntensity(2, screen_intensity);
+  lc.setIntensity(3, screen_intensity);
+  lc.clearDisplay(0);
+  lc.clearDisplay(1);
+  lc.clearDisplay(2);
+  lc.clearDisplay(3);
+  //
+  //  EEPROM.write(0,0);
+  //  EEPROM.write(1,1);
+  // LED Intensity 0-15
+
+
+  int num1 = EEPROM.read(0);
+  int num2 = EEPROM.read(1);
+  num1 = num1 * 100 + num2;
+  high_score = num1;
+
+  BT.begin(9600);
+
+  next = random(7);
+  Serial.println(F("Next:"));
+  Serial.println(next);
+  newBlock();
+}
+
+// Play = 0 -> Play Game
+// Play = 1 -> Pause Game
+// Pause = 0 -> On play screen in the starting
+// Pause = 1 -> On the play screen in while the game is running
+// Intital Play -> 1 || Pause -> 0
+void loop()
+{
+  Serial.println(F("In loop function right now"));
+  if (play == 0)
+  {
+    Serial.println(F("Game function is called"));
+    delay(1);
+    game();
+
+  }
+  else
+  {
+    if (pause == 0)
+    {
+      Serial.println(F("Initial ppr is called"));
+      newBlock();
+      ppr();
+    }
+    else
+    {
+      Serial.println(F("Pause ppr is called"));
+      ppr(1);
+    }
+  }
+}
+
