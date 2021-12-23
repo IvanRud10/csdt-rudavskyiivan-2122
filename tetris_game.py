@@ -1,4 +1,5 @@
 import sys, random
+import xml.etree.ElementTree as ET
 from PyQt5.QtWidgets import (
     QMainWindow,
     QFrame,
@@ -11,8 +12,20 @@ from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal
 from PyQt5.QtGui import QPainter, QColor
 
 from tetris_model import BOARD_DATA, Shape
+from tetris_ai import TETRIS_AI
 
-name_of_user = "Ivan"
+
+tree = ET.parse("config.xml")
+root = tree.getroot()
+name_of_user = ""
+choice = ""
+name_of_user = root[0].find("item[@name='User_Name']").text
+choice = root[0].find("item[@name='Play manually?']").text
+
+if choice == "Yes":
+    TETRIS_AI = None
+else:
+    pass
 
 
 class Tetris(QMainWindow):
@@ -27,7 +40,10 @@ class Tetris(QMainWindow):
 
     def initUI(self):
         self.gridSize = 28
-        self.speed = 250
+        if choice == "Yes":
+            self.speed = 250
+        else:
+            self.speed = 10
 
         self.timer = QBasicTimer()
         self.setFocusPolicy(Qt.StrongFocus)
@@ -94,6 +110,8 @@ class Tetris(QMainWindow):
 
     def timerEvent(self, event):
         if event.timerId() == self.timer.timerId():
+            if TETRIS_AI and not self.nextMove:
+                self.nextMove = TETRIS_AI.nextMove()
             if self.nextMove:
                 k = 0
                 while BOARD_DATA.currentDirection != self.nextMove[0] and k < 4:
