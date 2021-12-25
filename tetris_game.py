@@ -1,4 +1,5 @@
 import sys, random
+import sqlite3
 import xml.etree.ElementTree as ET
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -153,6 +154,37 @@ class Tetris(QMainWindow):
                         name_of_user + "'s" + " Result:" + score_str + "\n"
                     )
                     file.write(score_bytes)
+
+                def insertMultipleRecords(recordList):
+                    try:
+                        sqliteConnection = sqlite3.connect("results.db")
+                        cursor = sqliteConnection.cursor()
+                        print("Successfully Connected to SQLite")
+                        sqlite_insert_query = """INSERT INTO Results
+                                            (User_name, Score)
+                                            VALUES (?, ?);"""
+
+                        cursor.executemany(sqlite_insert_query, recordList)
+                        sqliteConnection.commit()
+                        print(
+                            "Total",
+                            cursor.rowcount,
+                            "Records inserted successfully into Results table",
+                        )
+                        sqliteConnection.commit()
+                        cursor.close()
+
+                    except sqlite3.Error as error:
+                        print("Failed to insert data into sqlite table", error)
+                    finally:
+                        if sqliteConnection:
+                            sqliteConnection.close()
+                            print("The SQLite connection is closed")
+
+                score_str = str(self.tboard.score)
+                recordsToInsert = [(name_of_user, score_str)]
+                insertMultipleRecords(recordsToInsert)
+
             return
         elif key == Qt.Key_Left:
             BOARD_DATA.moveLeft()

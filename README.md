@@ -51,4 +51,4 @@ _Control_:
 	Press Escape to start new game
     Press CTRL + S to save a game
 
-__Release version:__ ![version](https://img.shields.io/badge/version-2.1-blue)
+__Release version:__ ![version](https://img.shields.io/badge/version-3.0-blue)
